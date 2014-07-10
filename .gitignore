@@ -1,0 +1,7 @@
+*.swp
+docker-atom-dataset-provider/server.crt
+docker-atom-dataset-provider/server.csr
+docker-atom-dataset-provider/server.key
+docker-atom-dataset-provider/server.key.org
+docker-mytardis/authorized_keys
+docker-atom-dataset-provider/server-certificate-notes.txt
