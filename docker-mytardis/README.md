@@ -4,7 +4,11 @@ Build the image:
 
 Run it, linking it against the atom provider:
 
-    sudo docker run -i -t -p 0.0.0.0:3022:22 -p 0.0.0.0:8000:8000 -P --link ap:ap carlo/mytardis_stable_debian_jessie
+    sudo docker run -i -t -p 0.0.0.0:3022:22 -p 0.0.0.0:8000:8000 -P \
+    --link ap:ap \
+    -v /export/scratch02/mytardis/sqlite:/sqlite \
+    -v /export/scratch02/mytardis/var:/opt/mytardis/var \
+    carlo/mytardis_stable_debian_jessie
 
 Visit http://cai-murdoch.cai.uq.edu.au:8000
 

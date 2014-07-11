@@ -4,7 +4,7 @@ MAINTAINER Carlo Hamalainen <carlo@carlo-hamalainen.net>
 ADD         sources.list /etc/apt/sources.list
 RUN         apt-get -qq update
 RUN         apt-get -qqy dist-upgrade
-RUN         apt-get -qqy install python python-dev libpq-dev libssl-dev libsasl2-dev libldap2-dev libxslt1.1 libxslt1-dev python-libxslt1 libexiv2-dev git libgraphviz-dev git ipython screen htop imagemagick vim
+RUN         apt-get -qqy install python python-dev libpq-dev libssl-dev libsasl2-dev libldap2-dev libxslt1.1 libxslt1-dev python-libxslt1 libexiv2-dev git libgraphviz-dev git ipython screen htop imagemagick vim dcmtk
 
 RUN         mkdir -p /opt
 WORKDIR     /opt
@@ -72,6 +72,10 @@ ADD         /dicompng.py                            /opt/mytardis/tardis/tardis_
 ADD         /create_schema.py                        /opt/mytardis/
 RUN python create_schema.py
 
-RUN         apt-get -qqy install dcmtk
+# Sqlite database for MyTardis is stored here:
+VOLUME      /sqlite
+
+# MyTardis file store, staging area, etc:
+# VOLUME      /opt/mytardis/var
 
 CMD /usr/bin/supervisord -c /etc/supervisord.conf
