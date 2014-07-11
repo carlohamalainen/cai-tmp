@@ -1,7 +1,5 @@
-# https://github.com/wettenhj/atom-dataset-provider
-
-FROM debian:jessie
-MAINTAINER Carlo Hamalainen <carlo@carlo-hamalainen.net>
+FROM        debian:jessie
+MAINTAINER  Carlo Hamalainen <carlo@carlo-hamalainen.net>
 
 ADD         sources.list /etc/apt/sources.list
 RUN         apt-get -qq update
@@ -9,7 +7,7 @@ RUN         apt-get -qqy dist-upgrade
 RUN         apt-get -qqy install python python-dev git ipython screen htop vim npm
 
 # Debian provides nodejs, everyone else expects node.
-run         ln -s /usr/bin/nodejs /usr/local/bin/node
+RUN         ln -s /usr/bin/nodejs /usr/local/bin/node
 
 RUN         mkdir /opt || echo '/opt already exists...'
 WORKDIR     /opt
@@ -20,14 +18,13 @@ WORKDIR     /opt/atom-dataset-provider
 
 RUN         npm install
 
-
-RUN mkdir /opt/atom-dataset-provider/keys
-ADD server.key /opt/atom-dataset-provider/keys/
-ADD server.crt /opt/atom-dataset-provider/keys/
+RUN         mkdir /opt/atom-dataset-provider/keys
+ADD         server.key /opt/atom-dataset-provider/keys/
+ADD         server.crt /opt/atom-dataset-provider/keys/
 
 ADD         feed.atom lib/atom-dataset-provider/templates/feed.atom
 
-EXPOSE 4000
+EXPOSE      4000
 
 # CMD bin/atom-dataset-provider -d /opt/data -p 4000 --group-pattern '/^/opt/data/([^/]+/(?:mytardis)+/[^/]+/[^/]+/)/'
 #
