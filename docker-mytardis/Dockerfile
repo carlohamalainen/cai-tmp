@@ -6,6 +6,15 @@ RUN         apt-get -qq update
 RUN         apt-get -qqy dist-upgrade
 RUN         apt-get -qqy install python python-dev libpq-dev libssl-dev libsasl2-dev libldap2-dev libxslt1.1 libxslt1-dev python-libxslt1 libexiv2-dev git libgraphviz-dev git ipython screen htop imagemagick vim dcmtk
 
+RUN         DEBIAN_FRONTEND=noninteractive apt-get -y install pwgen libpq-dev python-dev postgresql postgresql-contrib python-software-properties software-properties-common
+
+USER postgres
+RUN    /etc/init.d/postgresql start &&\
+        psql --command "CREATE USER admin WITH SUPERUSER PASSWORD 'admin';" &&\
+        createdb -O admin admin
+
+USER root
+
 RUN         mkdir -p /opt
 WORKDIR     /opt
 
@@ -20,23 +29,23 @@ ADD         /create_atom_location.py                /opt/mytardis/
 ADD         /testing_set_all_experiments_public.py  /opt/mytardis/
 RUN         chmod +x /opt/mytardis/testing_set_all_experiments_public.py
 
+#ADD         /create_mysql_admin_user.sh             /opt/mytardis/
+#ADD         /create_db.sh                           /opt/mytardis/
+
+ADD run.sh /opt/mytardis/
+ADD run_celery.sh /opt/mytardis/
+RUN chmod +x /opt/mytardis/*.sh
+
 WORKDIR     /opt/mytardis
+
+#RUN         ./create_db.sh tardis
+#RUN         MYSQL_PASS=admin ./create_mysql_admin_user.sh
 
 RUN         python bootstrap.py -v 1.7.0
 RUN         ./bin/buildout -c buildout-dev.cfg
 
-RUN         ./bin/django syncdb --noinput --migrate
-
-RUN         python create_superuser.py  
-RUN         python create_admin.py
-RUN         python create_atom_location.py
-
 # http://stackoverflow.com/a/11788659/3659845
 # PYTHONPATH='/opt/mytardis':`ls -d -1 /opt/mytardis/eggs/* | tr '\n' ':'`
-
-ADD run.sh /opt/mytardis/
-ADD run_celery.sh /opt/mytardis/
-RUN chmod +x /opt/mytardis/run*sh
 
 EXPOSE 8000
 
@@ -70,12 +79,23 @@ EXPOSE 3022 22
 ADD         /dicompng.py                            /opt/mytardis/tardis/tardis_portal/filters/
 
 ADD         /create_schema.py                        /opt/mytardis/
-RUN python create_schema.py
 
 # Sqlite database for MyTardis is stored here:
-VOLUME      /sqlite
+# VOLUME      /sqlite
+
+# Stick logs on a volume too.
+# VOLUME      /var/log
 
 # MyTardis file store, staging area, etc:
 # VOLUME      /opt/mytardis/var
 
+RUN apt-get -qqy install python-psycopg2
+
+ADD         /sync_db.sh /opt/mytardis/
+RUN         chmod +x /opt/mytardis/sync_db.sh
+
+USER postgres
+RUN         /opt/mytardis/sync_db.sh
+
+USER root
 CMD /usr/bin/supervisord -c /etc/supervisord.conf

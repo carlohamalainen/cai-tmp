@@ -60,6 +60,8 @@ class DicomPngOutput(object):
             return schema
 
     def getDicomMetadata(self, filename):
+        logger = logging.getLogger(__name__)
+        logger.debug('dcmdump: ' + filename)
         import subprocess
         p = subprocess.Popen(['dcmdump', filename], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = p.communicate()
@@ -75,6 +77,7 @@ class DicomPngOutput(object):
         #    logger.debug('dicompng saveDicomMetadata: parameters == NULL :-(')
         #    return None
 
+        logger = logging.getLogger(__name__)
         logger.debug('dicompng saveDicomMetadata...')
 
         try:
