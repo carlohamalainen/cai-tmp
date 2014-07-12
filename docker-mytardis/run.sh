@@ -16,7 +16,15 @@
 cd /opt/mytardis
 
 echo "[run] syncdb"
-./bin/django syncdb --noinput
+
+echo "=> Waiting for postgresql to come online"
+RET=1
+while [[ RET -ne 0 ]]; do
+    echo "=> sleeping 5 seconds..."
+    sleep 5
+    ./bin/django syncdb --noinput --migrate
+    RET=$?
+done
 
 python create_superuser.py  
 python create_admin.py

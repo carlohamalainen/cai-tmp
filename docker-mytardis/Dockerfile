@@ -1,19 +1,26 @@
-FROM debian:jessie
-MAINTAINER Carlo Hamalainen <carlo@carlo-hamalainen.net>
+FROM        debian:jessie
+MAINTAINER  Carlo Hamalainen <carlo@carlo-hamalainen.net>
 
 ADD         sources.list /etc/apt/sources.list
 RUN         apt-get -qq update
 RUN         apt-get -qqy dist-upgrade
-RUN         apt-get -qqy install python python-dev libpq-dev libssl-dev libsasl2-dev libldap2-dev libxslt1.1 libxslt1-dev python-libxslt1 libexiv2-dev git libgraphviz-dev git ipython screen htop imagemagick vim dcmtk
+RUN         apt-get -qqy install python python-dev libpq-dev libssl-dev libsasl2-dev   \
+                                 libldap2-dev libxslt1.1 libxslt1-dev python-libxslt1  \
+                                 libexiv2-dev git libgraphviz-dev git ipython screen   \
+                                 htop imagemagick vim dcmtk openssh-server supervisor  \
+                                 pwgen libpq-dev python-dev python-software-properties \
+                                 software-properties-common python-psycopg2
 
-RUN         DEBIAN_FRONTEND=noninteractive apt-get -y install pwgen libpq-dev python-dev postgresql postgresql-contrib python-software-properties software-properties-common
+RUN         DEBIAN_FRONTEND=noninteractive apt-get -y install postgresql postgresql-contrib 
 
-USER postgres
-RUN    /etc/init.d/postgresql start &&\
-        psql --command "CREATE USER admin WITH SUPERUSER PASSWORD 'admin';" &&\
-        createdb -O admin admin
+ADD         /postgresql.conf /etc/postgresql/9.3/main/postgresql.conf
 
-USER root
+USER        postgres
+RUN         /etc/init.d/postgresql start && \
+                psql --command "CREATE USER admin WITH SUPERUSER PASSWORD 'admin';" && \
+                createdb -O admin admin
+
+USER        root
 
 RUN         mkdir -p /opt
 WORKDIR     /opt
@@ -21,25 +28,28 @@ WORKDIR     /opt
 RUN         git clone git://github.com/mytardis/mytardis.git
 RUN         git clone git://github.com/carlohamalainen/mytardis-app-atom.git /opt/mytardis/tardis/apps/atom
 
-ADD         /settings.py                            /opt/mytardis/tardis/
-ADD         /buildout-dev.cfg                       /opt/mytardis/
-ADD         /create_superuser.py                    /opt/mytardis/
-ADD         /create_admin.py                        /opt/mytardis/
-ADD         /create_atom_location.py                /opt/mytardis/
-ADD         /testing_set_all_experiments_public.py  /opt/mytardis/
+# FIXME
+RUN         sed -i 's/max_length=50/max_length=100/g' /opt/mytardis/tardis/tardis_portal/models/access_control.py
+
+ADD         settings.py                             /opt/mytardis/tardis/
+ADD         buildout-dev.cfg                        /opt/mytardis/
+ADD         create_superuser.py                     /opt/mytardis/
+ADD         create_admin.py                         /opt/mytardis/
+ADD         create_atom_location.py                 /opt/mytardis/
+ADD         testing_set_all_experiments_public.py   /opt/mytardis/
+ADD         run.sh                                  /opt/mytardis/
+ADD         run_celery.sh                           /opt/mytardis/
+ADD         create_postgres_tardis.sh               /opt/mytardis/
+ADD         migrate_and_sync.sh                     /opt/mytardis/
+ADD         supervisord.conf                        /etc/supervisord.conf
+ADD         dicompng.py                             /opt/mytardis/tardis/tardis_portal/filters/
+ADD         create_schema.py                        /opt/mytardis/
+
+
+RUN         chmod +x /opt/mytardis/*.sh
 RUN         chmod +x /opt/mytardis/testing_set_all_experiments_public.py
 
-#ADD         /create_mysql_admin_user.sh             /opt/mytardis/
-#ADD         /create_db.sh                           /opt/mytardis/
-
-ADD run.sh /opt/mytardis/
-ADD run_celery.sh /opt/mytardis/
-RUN chmod +x /opt/mytardis/*.sh
-
 WORKDIR     /opt/mytardis
-
-#RUN         ./create_db.sh tardis
-#RUN         MYSQL_PASS=admin ./create_mysql_admin_user.sh
 
 RUN         python bootstrap.py -v 1.7.0
 RUN         ./bin/buildout -c buildout-dev.cfg
@@ -54,31 +64,20 @@ ADD         authorized_keys /root/.ssh/
 RUN         chmod 700 /root/.ssh
 RUN         chmod 600 /root/.ssh/authorized_keys
 
-RUN echo 'root:root' | chpasswd
-RUN apt-get install -y openssh-server
-RUN mkdir -p /var/run/sshd ; chmod -rx /var/run/sshd
-# http://stackoverflow.com/questions/2419412/ssh-connection-stop-at-debug1-ssh2-msg-kexinit-sent
-RUN rm -f /etc/ssh/ssh_host_rsa_key
-RUN ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
-# Bad security, add a user and sudo instead!
-RUN sed -ri 's/#PermitRootLogin yes/PermitRootLogin yes/g' /etc/ssh/sshd_config
-RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
+RUN         mkdir -p  /var/run/sshd
+RUN         chmod -rx /var/run/sshd
+RUN         rm -f /etc/ssh/ssh_host_rsa_key
+RUN         ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
+
+# Weird bug with ssh, have to disable PAM otherwise we get logged out immediately.
 # http://stackoverflow.com/questions/18173889/cannot-access-centos-sshd-on-docker
-RUN sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config
-RUN sed -ri 's/#UsePAM no/UsePAM no/g' /etc/ssh/sshd_config
+RUN         sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config
+RUN         sed -ri 's/#UsePAM no/UsePAM no/g'   /etc/ssh/sshd_config
 
 # For celery, should use a different account
 ENV C_FORCE_ROOT YES
 
-RUN apt-get install -y supervisor
-ADD supervisord.conf /etc/supervisord.conf
 EXPOSE 3022 22
-
-
-# FIXME Fiddling with this so at the end of the file for the moment.
-ADD         /dicompng.py                            /opt/mytardis/tardis/tardis_portal/filters/
-
-ADD         /create_schema.py                        /opt/mytardis/
 
 # Sqlite database for MyTardis is stored here:
 # VOLUME      /sqlite
@@ -89,13 +88,10 @@ ADD         /create_schema.py                        /opt/mytardis/
 # MyTardis file store, staging area, etc:
 # VOLUME      /opt/mytardis/var
 
-RUN apt-get -qqy install python-psycopg2
+RUN         /opt/mytardis/create_postgres_tardis.sh
 
-ADD         /sync_db.sh /opt/mytardis/
-RUN         chmod +x /opt/mytardis/sync_db.sh
+RUN         /opt/mytardis/migrate_and_sync.sh
 
-USER postgres
-RUN         /opt/mytardis/sync_db.sh
+CMD         /usr/bin/supervisord -c /etc/supervisord.conf
 
-USER root
-CMD /usr/bin/supervisord -c /etc/supervisord.conf
+#CMD         /usr/sbin/sshd -D
