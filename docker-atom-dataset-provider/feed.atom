@@ -12,10 +12,10 @@
   {{/prev}}
   {{#datasets}}
   <entry>
-    <id>{{relpath1}}/{{relpath2}}/{{relpath3}}</id> 
+    <id>{{relpath1}}/{{relpath2}}/{{relpath3}}/{{relpath4}}</id> 
     <tardis:uniqueid>{{relpath1}}/{{relpath2}}/{{relpath3}}/{{relpath4}}</tardis:uniqueid>
     <author>
-      <name>{{relpath1}}</name>
+        <name>dicom</name>
     </author>
     <tardis:experimentTitle>{{relpath3}}</tardis:experimentTitle>
     <title>{{relpath4}}</title>

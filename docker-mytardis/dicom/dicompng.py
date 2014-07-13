@@ -11,6 +11,8 @@ from tardis.tardis_portal.models import ParameterName, DatafileParameter
 logger = logging.getLogger(__name__)
 
 class DicomPngOutput(object):
+    """ FIXME """
+
     def __init__(self, name, schema, tagsToFind=[], tagsToExclude=[]):
         self.name = name
         self.schema = schema
@@ -124,4 +126,6 @@ def make_filter(name='', schema='', tagsToFind=[], tagsToExclude=[]):
     #    raise ValueError("DicomPngOutput "
     #                     "requires a schema to be specified")
     return DicomPngOutput(name, schema, tagsToFind, tagsToExclude)
+
+make_filter.__doc__ = DicomPngOutput.__doc__
 

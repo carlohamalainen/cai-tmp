@@ -42,7 +42,7 @@ ADD         run_celery.sh                           /opt/mytardis/
 ADD         create_postgres_tardis.sh               /opt/mytardis/
 ADD         migrate_and_sync.sh                     /opt/mytardis/
 ADD         supervisord.conf                        /etc/supervisord.conf
-ADD         dicompng.py                             /opt/mytardis/tardis/tardis_portal/filters/
+ADD         dicom                                   /opt/mytardis/tardis/tardis_portal/filters/dicom
 ADD         create_schema.py                        /opt/mytardis/
 
 

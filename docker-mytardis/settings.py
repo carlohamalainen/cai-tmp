@@ -39,7 +39,7 @@ CELERYBEAT_SCHEDULE = dict(CELERYBEAT_SCHEDULE.items() + {
 
 # Post Save Filters
 # FIXME Is it ideal to drop dicompng.py into tardis_portal/filters? Might be better off in a separate app?
-POST_SAVE_FILTERS = [ ("tardis.tardis_portal.filters.dicompng.make_filter", ["metablob", "http://cai.uq.edu.au/schema/metadata/1"]), ]
+POST_SAVE_FILTERS = [ ("tardis.tardis_portal.filters.dicom.dicompng.make_filter", ["metablob", "http://cai.uq.edu.au/schema/metadata/1"]), ]
 
 # Add Middleware
 # FIXME Is this necessary?

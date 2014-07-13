@@ -22,7 +22,7 @@ RUN         mkdir /opt/atom-dataset-provider/keys
 ADD         server.key /opt/atom-dataset-provider/keys/
 ADD         server.crt /opt/atom-dataset-provider/keys/
 
-ADD         feed.atom lib/atom-dataset-provider/templates/feed.atom
+ADD         feed.atom /opt/atom-dataset-provider/lib/atom-dataset-provider/templates/
 
 EXPOSE      4000
 
