@@ -24,6 +24,8 @@ DATABASES['default']['USER'] = 'admin'
 DATABASES['default']['PASSWORD'] = 'admin'
 DATABASES['default']['HOST'] = '127.0.0.1'
 DATABASES['default']['PORT'] = ''
+#DATABASES['default']['ENGINE'] = 'django.db.backends.sqlite3'
+#DATABASES['default']['NAME'] = 'tardis_db'
 
 INSTALLED_APPS = INSTALLED_APPS + ("tardis.apps.atom",)
 IS_SECURE = True

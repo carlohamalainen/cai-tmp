@@ -72,7 +72,7 @@ class DicomPngOutput(object):
         p = subprocess.Popen(['dcmdump', filename], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = p.communicate()
         # FIXME check stderr
-        return stdout
+        return str((stdout, stderr,))[:10] # FIXME testing for postgresql issues
 
     def saveDicomMetadata(self, instance, schema, metadata):
         """Save all the metadata to a Dataset_Files paramamter set.
@@ -97,9 +97,17 @@ class DicomPngOutput(object):
 
         # FIXME this line fails due to: /opt/mytardis/tardis-test.log:[10/Jul/2014 15:30:23] DEBUG   dicompng __call__ Cannot assign "'FIXME'": "DatafileParameter.name" must be a "ParameterName" instance.
 
-        dfp = DatafileParameter(parameterset=ps, name=ParameterName.objects.get(name='dump'))
-        dfp.string_value = metadata
-        dfp.save()
+        try:
+            logger.debug('dicompng UP TO HERE2')
+            dfp = DatafileParameter(parameterset=ps, name=ParameterName.objects.get(name='dump'))
+            logger.debug('dicompng UP TO HERE3')
+            dfp.string_value = metadata
+            logger.debug('dicompng UP TO HERE4: ' + metadata)
+            dfp.save()
+            logger.debug('dicompng UP TO HERE5')
+        except Exception, e:
+            logger.debug('ZZZ' + str(e))
+            return None
 
         """
         for p in parameters:

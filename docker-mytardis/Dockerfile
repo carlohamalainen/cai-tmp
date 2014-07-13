@@ -11,6 +11,22 @@ RUN         apt-get -qqy install python python-dev libpq-dev libssl-dev libsasl2
                                  pwgen libpq-dev python-dev python-software-properties \
                                  software-properties-common python-psycopg2
 
+
+RUN         mkdir /root/.ssh
+ADD         authorized_keys /root/.ssh/
+RUN         chmod 700 /root/.ssh
+RUN         chmod 600 /root/.ssh/authorized_keys
+
+RUN         mkdir -p  /var/run/sshd
+RUN         chmod -rx /var/run/sshd
+RUN         rm -f /etc/ssh/ssh_host_rsa_key
+RUN         ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
+
+# Weird bug with ssh, have to disable PAM otherwise we get logged out immediately.
+# http://stackoverflow.com/questions/18173889/cannot-access-centos-sshd-on-docker
+RUN         sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config
+RUN         sed -ri 's/#UsePAM no/UsePAM no/g'   /etc/ssh/sshd_config
+
 RUN         DEBIAN_FRONTEND=noninteractive apt-get -y install postgresql postgresql-contrib 
 
 ADD         /postgresql.conf /etc/postgresql/9.3/main/postgresql.conf
@@ -28,11 +44,17 @@ WORKDIR     /opt
 RUN         git clone git://github.com/mytardis/mytardis.git
 RUN         git clone git://github.com/carlohamalainen/mytardis-app-atom.git /opt/mytardis/tardis/apps/atom
 
+ADD         buildout-dev.cfg                        /opt/mytardis/
+WORKDIR     /opt/mytardis
+RUN         python bootstrap.py -v 1.7.0
+RUN         ./bin/buildout -c buildout-dev.cfg
+
+WORKDIR     /opt
+
 # FIXME
 RUN         sed -i 's/max_length=50/max_length=100/g' /opt/mytardis/tardis/tardis_portal/models/access_control.py
 
 ADD         settings.py                             /opt/mytardis/tardis/
-ADD         buildout-dev.cfg                        /opt/mytardis/
 ADD         create_superuser.py                     /opt/mytardis/
 ADD         create_admin.py                         /opt/mytardis/
 ADD         create_atom_location.py                 /opt/mytardis/
@@ -49,30 +71,11 @@ ADD         create_schema.py                        /opt/mytardis/
 RUN         chmod +x /opt/mytardis/*.sh
 RUN         chmod +x /opt/mytardis/testing_set_all_experiments_public.py
 
-WORKDIR     /opt/mytardis
-
-RUN         python bootstrap.py -v 1.7.0
-RUN         ./bin/buildout -c buildout-dev.cfg
 
 # http://stackoverflow.com/a/11788659/3659845
 # PYTHONPATH='/opt/mytardis':`ls -d -1 /opt/mytardis/eggs/* | tr '\n' ':'`
 
 EXPOSE 8000
-
-RUN         mkdir /root/.ssh
-ADD         authorized_keys /root/.ssh/
-RUN         chmod 700 /root/.ssh
-RUN         chmod 600 /root/.ssh/authorized_keys
-
-RUN         mkdir -p  /var/run/sshd
-RUN         chmod -rx /var/run/sshd
-RUN         rm -f /etc/ssh/ssh_host_rsa_key
-RUN         ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
-
-# Weird bug with ssh, have to disable PAM otherwise we get logged out immediately.
-# http://stackoverflow.com/questions/18173889/cannot-access-centos-sshd-on-docker
-RUN         sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config
-RUN         sed -ri 's/#UsePAM no/UsePAM no/g'   /etc/ssh/sshd_config
 
 # For celery, should use a different account
 ENV C_FORCE_ROOT YES
