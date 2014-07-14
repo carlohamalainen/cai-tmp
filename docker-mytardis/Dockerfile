@@ -95,6 +95,8 @@ RUN         /opt/mytardis/create_postgres_tardis.sh
 
 RUN         /opt/mytardis/migrate_and_sync.sh
 
+ADD         init_filters.py /opt/mytardis/tardis/tardis_portal/filters/__init__.py
+
 CMD         /usr/bin/supervisord -c /etc/supervisord.conf
 
 #CMD         /usr/sbin/sshd -D

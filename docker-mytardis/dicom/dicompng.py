@@ -28,6 +28,10 @@ class DicomPngOutput(object):
         :param created: A boolean; True if a new record was created.
         :type created: bool
         """
+        logger = logging.getLogger(__name__)
+        logger.setLevel(10)
+        logger.debug('dicompng __call__')
+
         instance = kwargs.get('instance')
         schema = self.getSchema()
         filepath = instance.get_absolute_filepath()
@@ -67,12 +71,13 @@ class DicomPngOutput(object):
 
     def getDicomMetadata(self, filename):
         logger = logging.getLogger(__name__)
+        logger.setLevel(10)
         logger.debug('dcmdump: ' + filename)
         import subprocess
         p = subprocess.Popen(['dcmdump', filename], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = p.communicate()
         # FIXME check stderr
-        return str((stdout, stderr,))[:10] # FIXME testing for postgresql issues
+        return str((stdout, stderr,)) # FIXME testing for postgresql issues
 
     def saveDicomMetadata(self, instance, schema, metadata):
         """Save all the metadata to a Dataset_Files paramamter set.
@@ -84,6 +89,7 @@ class DicomPngOutput(object):
         #    return None
 
         logger = logging.getLogger(__name__)
+        logger.setLevel(10)
         logger.debug('dicompng saveDicomMetadata...')
 
         try:
@@ -94,8 +100,6 @@ class DicomPngOutput(object):
             ps.save()
 
         logger.debug('dicompng UP TO HERE, WHAT NEXT?')
-
-        # FIXME this line fails due to: /opt/mytardis/tardis-test.log:[10/Jul/2014 15:30:23] DEBUG   dicompng __call__ Cannot assign "'FIXME'": "DatafileParameter.name" must be a "ParameterName" instance.
 
         try:
             logger.debug('dicompng UP TO HERE2')
