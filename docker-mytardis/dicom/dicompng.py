@@ -77,7 +77,7 @@ class DicomPngOutput(object):
         p = subprocess.Popen(['dcmdump', filename], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = p.communicate()
         # FIXME check stderr
-        return str((stdout, stderr,)) # FIXME testing for postgresql issues
+        return str((stdout, stderr,))[:100] # FIXME testing for postgresql issues
 
     def saveDicomMetadata(self, instance, schema, metadata):
         """Save all the metadata to a Dataset_Files paramamter set.
