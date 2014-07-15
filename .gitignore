@@ -5,3 +5,8 @@ docker-atom-dataset-provider/server.key
 docker-atom-dataset-provider/server.key.org
 docker-mytardis/authorized_keys
 docker-atom-dataset-provider/server-certificate-notes.txt
+docker-mytardis/vim/bundle/ghcmod-vim/.git
+docker-mytardis/vim/bundle/vimproc.vim/.git
+docker-mytardis/vim/bundle/neocomplete.vim/.git
+docker-mytardis/vim/bundle/syntastic/.git
+docker-mytardis/vim/bundle/Dockerfile/.git

@@ -5,13 +5,13 @@ exec su postgres -c "/usr/lib/postgresql/9.3/bin/postgres -D /var/lib/postgresql
 echo "=> Syncing django database"
 RET=1
 while [[ RET -ne 0 ]]; do
-    sleep 5
+    sleep 1
     cd /opt/mytardis
     ./bin/django syncdb --noinput
     RET=$?
 done
 
-# FIXME Assume from here on that the database is up...
+# Assume from here on that the database is up...
 set -e
 
 cd /opt/mytardis

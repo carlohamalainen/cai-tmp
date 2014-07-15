@@ -5,7 +5,7 @@ exec su postgres -c "/usr/lib/postgresql/9.3/bin/postgres -D /var/lib/postgresql
 echo "=> Creating the tardis database"
 RET=1
 while [[ RET -ne 0 ]]; do
-    sleep 5
+    sleep 1
     exec su postgres -c "createdb tardis"
     RET=$?
 done
