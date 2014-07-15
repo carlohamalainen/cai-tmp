@@ -91,6 +91,9 @@ EXPOSE 3022 22
 # MyTardis file store, staging area, etc:
 # VOLUME      /opt/mytardis/var
 
+# Temp space for development.
+VOLUME      /scratch
+
 RUN         /opt/mytardis/create_postgres_tardis.sh
 
 RUN         /opt/mytardis/migrate_and_sync.sh

@@ -6,6 +6,7 @@ Run it, linking it against the atom provider:
 
     sudo docker run -i -t --rm -p 0.0.0.0:3022:22 -p 0.0.0.0:8000:8000 -P \
     --link ap:ap \
+    -v /data/home/uqchamal/scratch-docker-mytardis:/scratch \
     carlo/mytardis_stable_debian_jessie
 
 Visit http://cai-murdoch.cai.uq.edu.au:8000
