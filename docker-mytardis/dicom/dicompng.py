@@ -36,8 +36,7 @@ class DicomPngOutput(object):
         schema = self.getSchema()
         filepath = instance.get_absolute_filepath()
 
-        import os
-        os.system('echo %s >> /tmp/foo' % filepath)
+        if instance.get_mimetype() != 'application/dicom': return
 
         logger = logging.getLogger(__name__)
         logger.debug('dicompng filepath: ' + filepath)
