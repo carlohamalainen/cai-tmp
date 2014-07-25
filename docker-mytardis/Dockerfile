@@ -61,6 +61,9 @@ WORKDIR     /opt
 RUN         git clone git://github.com/mytardis/mytardis.git
 RUN         git clone git://github.com/carlohamalainen/mytardis-app-atom.git /opt/mytardis/tardis/apps/atom
 
+# RUN         git clone -b enhanced_storage_backend https://github.com/grischa/mytardis.git
+# RUN         git clone -b develop git://github.com/mytardis/mytardis.git
+
 # Dodgy patch: allow longer usernames.
 RUN         sed -i 's/max_length=50/max_length=100/g' /opt/mytardis/tardis/tardis_portal/models/access_control.py
 
@@ -80,7 +83,7 @@ ADD         run_celery.sh                           /opt/mytardis/
 ADD         create_postgres_tardis.sh               /opt/mytardis/
 ADD         migrate_and_sync.sh                     /opt/mytardis/
 ADD         supervisord.conf                        /etc/supervisord.conf
-ADD         dicom                                   /opt/mytardis/tardis/tardis_portal/filters/dicom
+#ADD         dicom                                   /opt/mytardis/tardis/tardis_portal/filters/dicom
 ADD         create_schema.py                        /opt/mytardis/
 
 RUN         chmod +x /opt/mytardis/*.sh
@@ -104,6 +107,9 @@ EXPOSE 3022 22
 # MyTardis file store, staging area, etc:
 # VOLUME      /opt/mytardis/var
 
+VOLUME      /mytardis_store
+VOLUME      /mytardis_staging
+
 # Temp space for development.
 VOLUME      /scratch
 
@@ -113,8 +119,18 @@ RUN         /opt/mytardis/create_postgres_tardis.sh
 # Migrate and sync the django models.
 RUN         /opt/mytardis/migrate_and_sync.sh
 
+RUN         rmdir /opt/mytardis/var/store
+RUN         ln -s /mytardis_store/ /opt/mytardis/var/store
+
+RUN         rmdir /opt/mytardis/var/staging
+RUN         ln -s /mytardis_staging/ /opt/mytardis/var/staging
+
+VOLUME      /other
+
 # Run supervisor - this loads MyTardis, celery, etc.
 CMD         /usr/bin/supervisord -c /etc/supervisord.conf
+
+# RUN echo "`/sbin/ip route|awk '/default/ { print $3 }'` ap" >> /etc/hosts
 
 # For testing, just load ssh.
 #CMD         /usr/sbin/sshd -D
