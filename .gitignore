@@ -10,3 +10,4 @@ docker-mytardis/vim/bundle/vimproc.vim/.git
 docker-mytardis/vim/bundle/neocomplete.vim/.git
 docker-mytardis/vim/bundle/syntastic/.git
 docker-mytardis/vim/bundle/Dockerfile/.git
+*.pyc

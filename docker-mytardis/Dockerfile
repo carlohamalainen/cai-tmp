@@ -11,7 +11,7 @@ RUN         apt-get -qqy install python python-dev libpq-dev libssl-dev libsasl2
                                  htop imagemagick vim dcmtk openssh-server supervisor  \
                                  pwgen libpq-dev python-dev python-software-properties \
                                  software-properties-common python-psycopg2 pyflakes   \
-                                 tcsh make vim-gtk
+                                 tcsh make vim-gtk minc-tools
 
 RUN         DEBIAN_FRONTEND=noninteractive apt-get -qqy install postgresql postgresql-contrib
 
@@ -65,6 +65,8 @@ RUN         git clone git://github.com/carlohamalainen/mytardis-app-atom.git /op
 # RUN         git clone -b develop git://github.com/mytardis/mytardis.git
 
 # Dodgy patch: allow longer usernames.
+# Note: turning this off means that create_and_sync.sh may fail since there
+# will be no schema to migrate ("Installed 0 object(s) from 0 fixture(s); Nothing seems to have changed.").
 RUN         sed -i 's/max_length=50/max_length=100/g' /opt/mytardis/tardis/tardis_portal/models/access_control.py
 
 ADD         buildout-dev.cfg /opt/mytardis/
@@ -74,6 +76,7 @@ RUN         ./bin/buildout -c buildout-dev.cfg
 WORKDIR     /opt
 
 ADD         settings.py                             /opt/mytardis/tardis/
+ADD         append_django_paths.py                  /opt/mytardis/
 ADD         create_superuser.py                     /opt/mytardis/
 ADD         create_admin.py                         /opt/mytardis/
 ADD         create_atom_location.py                 /opt/mytardis/
@@ -87,6 +90,12 @@ ADD         supervisord.conf                        /etc/supervisord.conf
 ADD         create_schema.py                        /opt/mytardis/
 
 RUN         chmod +x /opt/mytardis/*.sh
+
+
+WORKDIR     /opt/mytardis
+RUN         ln -s bin/django djangosettings.py
+
+WORKDIR     /opt
 
 # FIXME For testing, this script sets all experiments to be public. Disable for
 # production systems.

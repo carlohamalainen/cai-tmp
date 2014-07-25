@@ -1,14 +1,7 @@
-import os
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
-
-os.system('ln -s bin/django djangosettings.py')
-
-import djangosettings
 import sys
-sys.path += djangosettings.sys.path
 
-import os.path
-sys.path.append(os.path.join(os.getcwd(), 'tardis'))
+sys.path.append('/opt/mytardis')
+from append_django_paths import *
 
 from django.db import IntegrityError
 from tardis.tardis_portal.models import Schema

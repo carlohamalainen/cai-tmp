@@ -4,18 +4,12 @@ Build the image:
 
     sudo docker build -t='user/mytardis_stable_debian_jessie' .
 
-Run it, linking it against the atom provider:
+Run it:
 
     sudo docker run -i -t --rm -p 0.0.0.0:3022:22 -p 0.0.0.0:8000:8000 -P \
     -v /data/home/uqchamal/scratch-docker-mytardis:/scratch \
     -v /export/scratch02/mytardis/staging:/mytardis_staging \
     -v /export/scratch02/mytardis/store:/mytardis_store \
-    user/mytardis_stable_debian_jessie
-
-Run, for the 3T ingestion:
-
-    sudo docker run -i -t --rm -p 0.0.0.0:3022:22 -p 0.0.0.0:8000:8000 -P \
-    -v /data/home/uqchamal/scratch-docker-mytardis:/scratch \
     user/mytardis_stable_debian_jessie
 
 Visit http://cai-murdoch.cai.uq.edu.au:8000
