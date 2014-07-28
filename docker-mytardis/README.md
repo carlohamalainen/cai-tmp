@@ -10,6 +10,7 @@ Run it:
     -v /data/home/uqchamal/scratch-docker-mytardis:/scratch \
     -v /export/scratch02/mytardis/staging:/mytardis_staging \
     -v /export/scratch02/mytardis/store:/mytardis_store \
+    -v /mnt:/other \
     user/mytardis_stable_debian_jessie
 
 Visit http://cai-murdoch.cai.uq.edu.au:8000

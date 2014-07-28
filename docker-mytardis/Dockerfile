@@ -58,8 +58,11 @@ USER        root
 RUN         mkdir -p /opt
 WORKDIR     /opt
 
-RUN         git clone git://github.com/mytardis/mytardis.git
-RUN         git clone git://github.com/carlohamalainen/mytardis-app-atom.git /opt/mytardis/tardis/apps/atom
+#RUN         git clone git://github.com/mytardis/mytardis.git
+ADD         mytardis-86b63c1d1648ee19bceb1e71039abe733fea8038  /opt/mytardis
+
+#RUN         git clone git://github.com/carlohamalainen/mytardis-app-atom.git /opt/mytardis/tardis/apps/atom
+ADD         mytardis-app-atom-b384213113e5164937595413f23a11b28570e037 /opt/mytardis/tardis/apps/atom
 
 # RUN         git clone -b enhanced_storage_backend https://github.com/grischa/mytardis.git
 # RUN         git clone -b develop git://github.com/mytardis/mytardis.git
