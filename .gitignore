@@ -11,3 +11,5 @@ docker-mytardis/vim/bundle/neocomplete.vim/.git
 docker-mytardis/vim/bundle/syntastic/.git
 docker-mytardis/vim/bundle/Dockerfile/.git
 *.pyc
+docker-mytardis/mytardis-86b63c1d1648ee19bceb1e71039abe733fea8038
+docker-mytardis/mytardis-app-atom-b384213113e5164937595413f23a11b28570e037

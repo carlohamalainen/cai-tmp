@@ -11,3 +11,5 @@ Run it:
 Import a dataset:
 
     ./ImportDicomFiles.py localhost 8042 /mnt/CARLO_HAMALAINEN/mytardis_ingestion_testing/
+
+    ./ImportDicomFiles.py localhost 8042 /export/scratch02/carlo_brain_just_t1
