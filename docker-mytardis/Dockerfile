@@ -11,7 +11,9 @@ RUN         apt-get -qqy install python python-dev libpq-dev libssl-dev libsasl2
                                  htop imagemagick vim dcmtk openssh-server supervisor  \
                                  pwgen libpq-dev python-dev python-software-properties \
                                  software-properties-common python-psycopg2 pyflakes   \
-                                 tcsh make vim-gtk minc-tools
+                                 tcsh make vim-gtk minc-tools python-pip
+
+RUN         pip install requests --upgrade
 
 RUN         DEBIAN_FRONTEND=noninteractive apt-get -qqy install postgresql postgresql-contrib
 
