@@ -29,3 +29,16 @@ Look for errors in the logs:
 # TODO
 
 Move Postgresql database onto a volume for persistence.
+
+# Notes
+
+Beware that ```/var/lib/docker``` can get large. Put this on a mount
+point with enough free space.
+
+# Timing
+
+* CAI 3T, samba mount, 6 hours 10 minutes to import
+```/mnt/12014_MITIITM```. Each directory of DICOM files converted to
+MNC, thumbnails generated, and MNC metadata extracted.
+
+
