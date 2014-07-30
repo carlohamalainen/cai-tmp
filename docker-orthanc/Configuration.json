@@ -102,6 +102,8 @@
      **/
     // "sample" : [ "STORESCP", "localhost", 2000 ]
 
+    "mytardis" : [ "STORESCP", "cai-murdoch", 5000 ]
+
     /**
      * A fourth parameter is available to enable patches for a
      * specific PACS manufacturer. The allowed values are currently
