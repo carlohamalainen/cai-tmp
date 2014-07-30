@@ -15,6 +15,9 @@ RUN         apt-get -qqy install python python-dev libpq-dev libssl-dev libsasl2
 
 RUN         pip install requests --upgrade
 
+RUN         pip install pydicom
+RUN         pip install pynetdicom
+
 RUN         DEBIAN_FRONTEND=noninteractive apt-get -qqy install postgresql postgresql-contrib
 
 # Sane vim environment.
@@ -109,8 +112,11 @@ RUN         chmod +x /opt/mytardis/testing_set_all_experiments_public.py
 # MyTardis is on port 8000.
 EXPOSE 8000
 
-# Port 3022 for ssh access.
-EXPOSE 3022 22
+# ssh
+EXPOSE 22
+
+# pynetdicom server
+EXPOSE 5000
 
 # Sqlite database for MyTardis is stored here:
 # VOLUME      /sqlite
@@ -143,8 +149,6 @@ VOLUME      /other
 
 # Run supervisor - this loads MyTardis, celery, etc.
 CMD         /usr/bin/supervisord -c /etc/supervisord.conf
-
-# RUN echo "`/sbin/ip route|awk '/default/ { print $3 }'` ap" >> /etc/hosts
 
 # For testing, just load ssh.
 #CMD         /usr/sbin/sshd -D
